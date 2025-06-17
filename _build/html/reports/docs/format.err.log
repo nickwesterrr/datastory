@@ -18,6 +18,12 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
+# 1. Laad en verwerk data
+df = pd.read_csv("MES_0325.csv", skiprows=6, header=None, dtype={4: str}, low_memory=False)
+df.columns = ['Country', 'Time', 'Balance', 'Product', 'Value', 'Unit']
+df['Value'] = pd.to_numeric(df['Value'], errors='coerce')
+df = df[df['Balance'] == 'Net Electricity Production']
+
 # Groepeer per land en product, tel alle waarden op
 grouped = df.groupby(['Country', 'Product'])['Value'].sum().reset_index()
 
@@ -57,50 +63,13 @@ plt.show()
 
 
 [1;31m---------------------------------------------------------------------------[0m
-[1;31mKeyError[0m                                  Traceback (most recent call last)
-Cell [1;32mIn[5], line 2[0m
-[0;32m      1[0m [38;5;66;03m# Groepeer per land en product, tel alle waarden op[39;00m
-[1;32m----> 2[0m grouped [38;5;241m=[39m [43mdf[49m[38;5;241;43m.[39;49m[43mgroupby[49m[43m([49m[43m[[49m[38;5;124;43m'[39;49m[38;5;124;43mCountry[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43mProduct[39;49m[38;5;124;43m'[39;49m[43m][49m[43m)[49m[[38;5;124m'[39m[38;5;124mValue[39m[38;5;124m'[39m][38;5;241m.[39msum()[38;5;241m.[39mreset_index()
-[0;32m      4[0m [38;5;66;03m# Maak een draaitabel waarbij elke rij een land is[39;00m
-[0;32m      5[0m pivot [38;5;241m=[39m grouped[38;5;241m.[39mpivot(index[38;5;241m=[39m[38;5;124m'[39m[38;5;124mCountry[39m[38;5;124m'[39m, columns[38;5;241m=[39m[38;5;124m'[39m[38;5;124mProduct[39m[38;5;124m'[39m, values[38;5;241m=[39m[38;5;124m'[39m[38;5;124mValue[39m[38;5;124m'[39m)[38;5;241m.[39mfillna([38;5;241m0[39m)
+[1;31mNameError[0m                                 Traceback (most recent call last)
+Cell [1;32mIn[5], line 14[0m
+[0;32m     11[0m pivot [38;5;241m=[39m grouped[38;5;241m.[39mpivot(index[38;5;241m=[39m[38;5;124m'[39m[38;5;124mCountry[39m[38;5;124m'[39m, columns[38;5;241m=[39m[38;5;124m'[39m[38;5;124mProduct[39m[38;5;124m'[39m, values[38;5;241m=[39m[38;5;124m'[39m[38;5;124mValue[39m[38;5;124m'[39m)[38;5;241m.[39mfillna([38;5;241m0[39m)
+[0;32m     13[0m [38;5;66;03m# Voeg kolommen toe voor totaal per categorie[39;00m
+[1;32m---> 14[0m pivot[[38;5;124m'[39m[38;5;124mFossiel[39m[38;5;124m'[39m] [38;5;241m=[39m pivot[[43mfossiel[49m][38;5;241m.[39msum(axis[38;5;241m=[39m[38;5;241m1[39m)
+[0;32m     15[0m pivot[[38;5;124m'[39m[38;5;124mDuurzaam[39m[38;5;124m'[39m] [38;5;241m=[39m pivot[duurzaam][38;5;241m.[39msum(axis[38;5;241m=[39m[38;5;241m1[39m)
+[0;32m     17[0m [38;5;66;03m# Bereken het totale stroomverbruik per land (fossiel + duurzaam)[39;00m
 
-File [1;32m~\anaconda3\envs\jupyterbook\lib\site-packages\pandas\core\frame.py:9183[0m, in [0;36mDataFrame.groupby[1;34m(self, by, axis, level, as_index, sort, group_keys, observed, dropna)[0m
-[0;32m   9180[0m [38;5;28;01mif[39;00m level [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m [38;5;129;01mand[39;00m by [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[0;32m   9181[0m     [38;5;28;01mraise[39;00m [38;5;167;01mTypeError[39;00m([38;5;124m"[39m[38;5;124mYou have to supply one of [39m[38;5;124m'[39m[38;5;124mby[39m[38;5;124m'[39m[38;5;124m and [39m[38;5;124m'[39m[38;5;124mlevel[39m[38;5;124m'[39m[38;5;124m"[39m)
-[1;32m-> 9183[0m [38;5;28;01mreturn[39;00m [43mDataFrameGroupBy[49m[43m([49m
-[0;32m   9184[0m [43m    [49m[43mobj[49m[38;5;241;43m=[39;49m[38;5;28;43mself[39;49m[43m,[49m
-[0;32m   9185[0m [43m    [49m[43mkeys[49m[38;5;241;43m=[39;49m[43mby[49m[43m,[49m
-[0;32m   9186[0m [43m    [49m[43maxis[49m[38;5;241;43m=[39;49m[43maxis[49m[43m,[49m
-[0;32m   9187[0m [43m    [49m[43mlevel[49m[38;5;241;43m=[39;49m[43mlevel[49m[43m,[49m
-[0;32m   9188[0m [43m    [49m[43mas_index[49m[38;5;241;43m=[39;49m[43mas_index[49m[43m,[49m
-[0;32m   9189[0m [43m    [49m[43msort[49m[38;5;241;43m=[39;49m[43msort[49m[43m,[49m
-[0;32m   9190[0m [43m    [49m[43mgroup_keys[49m[38;5;241;43m=[39;49m[43mgroup_keys[49m[43m,[49m
-[0;32m   9191[0m [43m    [49m[43mobserved[49m[38;5;241;43m=[39;49m[43mobserved[49m[43m,[49m
-[0;32m   9192[0m [43m    [49m[43mdropna[49m[38;5;241;43m=[39;49m[43mdropna[49m[43m,[49m
-[0;32m   9193[0m [43m[49m[43m)[49m
-
-File [1;32m~\anaconda3\envs\jupyterbook\lib\site-packages\pandas\core\groupby\groupby.py:1329[0m, in [0;36mGroupBy.__init__[1;34m(self, obj, keys, axis, level, grouper, exclusions, selection, as_index, sort, group_keys, observed, dropna)[0m
-[0;32m   1326[0m [38;5;28mself[39m[38;5;241m.[39mdropna [38;5;241m=[39m dropna
-[0;32m   1328[0m [38;5;28;01mif[39;00m grouper [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[1;32m-> 1329[0m     grouper, exclusions, obj [38;5;241m=[39m [43mget_grouper[49m[43m([49m
-[0;32m   1330[0m [43m        [49m[43mobj[49m[43m,[49m
-[0;32m   1331[0m [43m        [49m[43mkeys[49m[43m,[49m
-[0;32m   1332[0m [43m        [49m[43maxis[49m[38;5;241;43m=[39;49m[43maxis[49m[43m,[49m
-[0;32m   1333[0m [43m        [49m[43mlevel[49m[38;5;241;43m=[39;49m[43mlevel[49m[43m,[49m
-[0;32m   1334[0m [43m        [49m[43msort[49m[38;5;241;43m=[39;49m[43msort[49m[43m,[49m
-[0;32m   1335[0m [43m        [49m[43mobserved[49m[38;5;241;43m=[39;49m[38;5;28;43;01mFalse[39;49;00m[43m [49m[38;5;28;43;01mif[39;49;00m[43m [49m[43mobserved[49m[43m [49m[38;5;129;43;01mis[39;49;00m[43m [49m[43mlib[49m[38;5;241;43m.[39;49m[43mno_default[49m[43m [49m[38;5;28;43;01melse[39;49;00m[43m [49m[43mobserved[49m[43m,[49m
-[0;32m   1336[0m [43m        [49m[43mdropna[49m[38;5;241;43m=[39;49m[38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mdropna[49m[43m,[49m
-[0;32m   1337[0m [43m    [49m[43m)[49m
-[0;32m   1339[0m [38;5;28;01mif[39;00m observed [38;5;129;01mis[39;00m lib[38;5;241m.[39mno_default:
-[0;32m   1340[0m     [38;5;28;01mif[39;00m [38;5;28many[39m(ping[38;5;241m.[39m_passed_categorical [38;5;28;01mfor[39;00m ping [38;5;129;01min[39;00m grouper[38;5;241m.[39mgroupings):
-
-File [1;32m~\anaconda3\envs\jupyterbook\lib\site-packages\pandas\core\groupby\grouper.py:1043[0m, in [0;36mget_grouper[1;34m(obj, key, axis, level, sort, observed, validate, dropna)[0m
-[0;32m   1041[0m         in_axis, level, gpr [38;5;241m=[39m [38;5;28;01mFalse[39;00m, gpr, [38;5;28;01mNone[39;00m
-[0;32m   1042[0m     [38;5;28;01melse[39;00m:
-[1;32m-> 1043[0m         [38;5;28;01mraise[39;00m [38;5;167;01mKeyError[39;00m(gpr)
-[0;32m   1044[0m [38;5;28;01melif[39;00m [38;5;28misinstance[39m(gpr, Grouper) [38;5;129;01mand[39;00m gpr[38;5;241m.[39mkey [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
-[0;32m   1045[0m     [38;5;66;03m# Add key to exclusions[39;00m
-[0;32m   1046[0m     exclusions[38;5;241m.[39madd(gpr[38;5;241m.[39mkey)
-
-[1;31mKeyError[0m: 'Country'
+[1;31mNameError[0m: name 'fossiel' is not defined
 
