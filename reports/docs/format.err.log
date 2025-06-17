@@ -22,86 +22,63 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import geopandas as gpd
 import pandas as pd
-import plotly.express as px
-import random
+import geopandas as gpd
+import matplotlib.pyplot as plt
 
-# Read the shapefile using geopandas
-shapefile_path = 'gadm41_NLD_shp/gadm41_NLD_1.shp'
-data = gpd.read_file(shapefile_path)
+# Laad datasets (gebruik jouw CSV-bestanden)
+co2_df = pd.read_csv("co-emissions-by-sector.csv")
+ev_df = pd.read_csv("IEA-EV-dataEV salesHistoricalCars.csv")
 
-# Sample data for demonstration
-sample_data = {
-    'Province': ['Drenthe', 'Flevoland', 'Fryslân', 'Gelderland', 'Groningen', 'Limburg', 'Noord-Brabant', 'Noord-Holland', 'Overijssel', 'Utrecht', 'Zeeland', 'NA'],
-    'average_income': [random.randint(0, 1000000) for _ in range(12)]
-}
+# Filter CO2 voor 2020
+co2_2020 = co2_df[(co2_df["Year"] == 2020) & (co2_df["Carbon dioxide emissions from transport"].notna())]
+co2_2020 = co2_2020[["Entity", "Code", "Carbon dioxide emissions from transport"]].copy()
+co2_2020.rename(columns={"Carbon dioxide emissions from transport": "transport_co2"}, inplace=True)
 
-# Merge the sample data with the shapefile data
-merged_data = data.merge(pd.DataFrame(sample_data), left_on='NAME_1', right_on='Province')
+# Filter EV-aandeel voor 2020
+ev_2020 = ev_df[
+    (ev_df['parameter'] == 'EV stock share') &
+    (ev_df['mode'] == 'Cars') &
+    (ev_df['powertrain'] == 'EV') &
+    (ev_df['year'] == 2020)
+][['region', 'value']].copy()
+ev_2020.rename(columns={'region': 'Entity', 'value': 'ev_share_percent'}, inplace=True)
 
-# Exclude Zeeuwse meren and IJsselmeer regions
-merged_data = merged_data[~merged_data['NAME_1'].isin(['Zeeuwse meren', 'IJsselmeer'])]
+# Merge
+merged = pd.merge(co2_2020, ev_2020, on="Entity", how="left")
 
-# Rename Fryslân to Friesland
-merged_data.loc[merged_data['NAME_1'] == 'Fryslân', 'NAME_1'] = 'Friesland'
+# Wereldkaart
+world = gpd.read_file("110m_cultral_shp/ne_110m_admin_0_countries.shp")
+world['centroid'] = world.representative_point()
+world_map = world.merge(merged, left_on="ADMIN", right_on="Entity", how="left")
 
-# Rename Noord-Brabant to Brabant
-merged_data.loc[merged_data['NAME_1'] == 'Noord-Brabant', 'NAME_1'] = 'Brabant'
+# Plot
+fig, ax = plt.subplots(figsize=(16, 10))
+world_map.plot(column='transport_co2', cmap='OrRd', linewidth=0.8, edgecolor='0.8',
+               legend=True, ax=ax, missing_kwds={"color": "lightgrey"},
+               legend_kwds={'label': "Transport CO₂-uitstoot (ton, 2020)", 'shrink': 0.6})
 
-# Rename NA to Zuid-Holland
-merged_data.loc[merged_data['NAME_1'] == 'NA', 'NAME_1'] = 'Zuid-Holland'
+for idx, row in world_map.iterrows():
+    if pd.notna(row['ev_share_percent']):
+        point = row['centroid']
+        ax.text(point.x, point.y, f"{row['ev_share_percent']:.1f}%", fontsize=6,
+                ha='center', va='center', color='black')
 
-# Create the choropleth map using Plotly Express
-fig6 = px.choropleth_mapbox(
-    merged_data,
-    geojson=merged_data.geometry.__geo_interface__,
-    color='average_income',
-    locations=merged_data.index,
-    featureidkey="id",
-    center={"lat": 52.1326, "lon": 5.2913},
-    mapbox_style="carto-positron",
-    zoom=5.5,
-    color_continuous_scale='Blues',
-    labels={'average_income': 'Average income'},
-    opacity=0.75,
-    hover_name='NAME_1',  # Update to 'NAME_1' for correct hover labels
-    hover_data={'average_income': True, 'NAME_1': False},  # Update to 'NAME_1' for correct hover data
-    custom_data=['average_income'],
-)
-
-fig6.update_traces(
-    hovertemplate='<b>%{hovertext}</b><br>Average income: <b>%{customdata[0]}k</b><extra></extra>',
-)
-
-fig6.update_layout(
-    title_text='Average income by Province in the Netherlands',
-    margin={"r": 30, "t": 70, "l": 30, "b": 30},
-    legend=dict(
-        traceorder='normal',
-        font=dict(size=10),
-        bgcolor='rgba(255, 255, 255, 0.5)',
-        bordercolor='rgba(0, 0, 0, 0.5)',
-        borderwidth=0.5
-    ),
-    hoverlabel=dict(
-        bgcolor='white',
-        font_size=12,
-        font_family='Arial',
-    ),
-    height=600
-)
-
-fig6.show()
+ax.set_title('Wereldkaart: Transport CO₂-uitstoot per land (2020) en EV-aandeel (%)', fontsize=15)
+ax.axis('off')
+plt.tight_layout()
+plt.savefig("wereldkaart_transport_co2_ev_share_2020.png", dpi=300)
+plt.show()
 ------------------
 
 
 [1;31m---------------------------------------------------------------------------[0m
 [1;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-Cell [1;32mIn[7], line 1[0m
-[1;32m----> 1[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mgeopandas[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mgpd[39;00m
-[0;32m      2[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mpandas[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mpd[39;00m
-[0;32m      3[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01mexpress[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mpx[39;00m
+Cell [1;32mIn[4], line 2[0m
+[0;32m      1[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mpandas[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mpd[39;00m
+[1;32m----> 2[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mgeopandas[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mgpd[39;00m
+[0;32m      3[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mplt[39;00m
+[0;32m      5[0m [38;5;66;03m# Laad datasets (gebruik jouw CSV-bestanden)[39;00m
 
 [1;31mModuleNotFoundError[0m: No module named 'geopandas'
 
