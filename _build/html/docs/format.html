@@ -679,7 +679,10 @@ Naarmate het aandeel EV’s in de nieuwverkopen toeneemt, daalt de gemiddelde ui
 <span class="expanded">Hide code cell source</span>
 </summary>
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Laad en verwerk data</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fossiel</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Total Combustible Fuels&#39;</span><span class="p">,</span> <span class="s1">&#39;Natural Gas&#39;</span><span class="p">]</span>
+<span class="n">duurzaam</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Hydro&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind&#39;</span><span class="p">,</span> <span class="s1">&#39;Solar&#39;</span><span class="p">]</span>
+
+<span class="c1"># 1. Laad en verwerk data</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;MES_0325.csv&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="nb">str</span><span class="p">},</span> <span class="n">low_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="s1">&#39;Balance&#39;</span><span class="p">,</span> <span class="s1">&#39;Product&#39;</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">,</span> <span class="s1">&#39;Unit&#39;</span><span class="p">]</span>
 <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
@@ -725,18 +728,7 @@ Naarmate het aandeel EV’s in de nieuwverkopen toeneemt, daalt de gemiddelde ui
 </div>
 </details>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">14</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">grouped</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;Product&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;Value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="c1"># Voeg kolommen toe voor totaal per categorie</span>
-<span class="ne">---&gt; </span><span class="mi">14</span> <span class="n">pivot</span><span class="p">[</span><span class="s1">&#39;Fossiel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pivot</span><span class="p">[</span><span class="n">fossiel</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="n">pivot</span><span class="p">[</span><span class="s1">&#39;Duurzaam&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pivot</span><span class="p">[</span><span class="n">duurzaam</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="c1"># Bereken het totale stroomverbruik per land (fossiel + duurzaam)</span>
-
-<span class="ne">NameError</span>: name &#39;fossiel&#39; is not defined
-</pre></div>
-</div>
+<img alt="../_images/a203f332d12a5b9f702532cfdcd87d07cc59d2e9ed199aea22d4701f5d450477.png" src="../_images/a203f332d12a5b9f702532cfdcd87d07cc59d2e9ed199aea22d4701f5d450477.png" />
 </div>
 </div>
 </section>
