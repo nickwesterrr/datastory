@@ -1,5 +1,7 @@
-# data-story-example
+# Dataverhaal
 
-This repository hosts an example that shows the format of the data story for the information visualization course at the Informatics Institute, University of Amsterdam.
+Deze repository bevat het dataverhaal gemaakt voor het vak Information Visualization aan het Informatics Institute, Universiteit van Amsterdam.
 
-Credit: the format example is originally created by [Roan van Blanken](https://github.com/roanvanblanken) and later edited by [Yen-Chia Hsu](https://github.com/yenchiah).
+Het verhaal onderzoekt de opkomst van elektrische voertuigen en hun relatie tot CO2-uitstoot in transport. Het bevat twee perspectieven, optimistisch en kritisch, ondersteund door samengestelde datasets en visualisaties gebouwd met Python en Jupyter Book.
+
+Credits: het formaatvoorbeeld is oorspronkelijk gemaakt door [Roan van Blanken](https://github.com/roanvanblanken) en later bewerkt door [Yen-Chia Hsu](https://github.com/yenchiah).
